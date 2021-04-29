@@ -2,6 +2,8 @@
 
 ## Install Python Libraries
 
+Additional libraries are needed to run the HSD service.
+
 On Raspberry Pi, run:
 
 ```bash
