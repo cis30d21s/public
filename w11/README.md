@@ -10,6 +10,10 @@ python3 -m pip install --upgrade flask flask-cors
 
 ## Test Server-Side Events
 
+Test programs can be used to test server-side events without UI.
+
+On Raspberry Pi, run:
+
 ```bash
 # start `hsd-service`
 python3 service/hsd-service.py
