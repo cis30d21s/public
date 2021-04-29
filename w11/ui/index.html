@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Security Dashboard</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/theme/default.css">
+    <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+
+<body>
+    <div id="app">
+        <h1>Home Security Dashboard</h1>
+        <arm-switch ref="armSwitch" />
+    </div>
+
+    <script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.js"></script>
+    <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
+    <script src="./components/ArmSwitch.js"></script>
+    <script>
+        Vue.use(VueMaterial.default);
+        const serviceUrl = 'http://rp2021b.local:5000';
+        Vue.Constants = {
+            SERVICE_URL: serviceUrl
+        };
+        const sse = new EventSource(`${serviceUrl}/listen`);
+        const app = new Vue({
+            methods: {
+                handleMessage(message) {
+                    console.log(`Got message: ${message.data}`);
+                    const armed = JSON.parse(message.data).armed
+                    this.$refs.armSwitch.armed = armed;
+                }
+            },
+            beforeDestroy() {
+                sse.close();
+            }
+        });
+        app.$mount('#app')
+        sse.addEventListener("status", app.handleMessage)
+    </script>
+</body>
+
+</html>
