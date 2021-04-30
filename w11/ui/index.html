@@ -15,34 +15,62 @@
 <body>
     <div id="app">
         <h1>Home Security Dashboard</h1>
-        <arm-switch ref="armSwitch" />
+        <arm-switch ref="armSwitch"></arm-switch>
+        <motion-distance-card ref="motionDistanceCard"></motion-distance-card>
     </div>
 
     <script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.js"></script>
     <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
     <script src="./components/ArmSwitch.js"></script>
+    <script src="./components/MotionDistanceCard.js"></script>
     <script>
-        Vue.use(VueMaterial.default);
         const serviceUrl = 'http://rp2021b.local:5000';
+        Vue.use(VueMaterial.default);
         Vue.Constants = {
             SERVICE_URL: serviceUrl
         };
-        const sse = new EventSource(`${serviceUrl}/listen`);
+        let sse;
         const app = new Vue({
             methods: {
-                handleMessage(message) {
-                    console.log(`Got message: ${message.data}`);
-                    const armed = JSON.parse(message.data).armed
-                    this.$refs.armSwitch.armed = armed;
+                handleStatusMessage(message) {
+                    console.log(`Got status message: ${message.data}`);
+                    this.$refs.armSwitch.armed = JSON.parse(message.data).armed;
+                },
+                handleMotionMessage(message) {
+                    console.log(`Got motion message: ${message.data}`);
+                    const data = JSON.parse(message.data);
+                    this.$refs.motionDistanceCard.motion = data.motion;
+                    this.$refs.motionDistanceCard.distance = data.distance;
+                },
+                initSSE(callback_on_open) {
+                    sse?.close();
+                    console.log('SSE initializing');
+                    sse = new EventSource(`${serviceUrl}/listen`);
+                    sse.addEventListener("status", this.handleStatusMessage);
+                    sse.addEventListener("motion", this.handleMotionMessage);
+                    sse.addEventListener("open", () => {
+                        console.log('SSE open');
+                        if (callback_on_open) callback_on_open();
+                    });
+                    sse.addEventListener("error", (e) => {
+                        console.error('SSE failed:', e.target);
+                    })
                 }
             },
+            mounted() {
+                this.initSSE();
+                setInterval(() => { // auto-reconnect
+                    if (sse?.readyState !== EventSource.OPEN) {
+                        this.initSSE(() => this.$refs.armSwitch.checkStatus());
+                    }
+                }, 5000);
+            },
             beforeDestroy() {
-                sse.close();
-            }
+                sse?.close();
+            },
         });
-        app.$mount('#app')
-        sse.addEventListener("status", app.handleMessage)
+        app.$mount('#app');
     </script>
 </body>
 

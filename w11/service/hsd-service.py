@@ -5,13 +5,22 @@ from flask_cors import CORS
 from werkzeug.serving import WSGIRequestHandler
 from MessageAnnouncer import MessageAnnouncer
 from ArmSwitch import ArmSwitch
+from MotionDistance import MotionDistanceMonitor
 import logging
+import time
 
 app = flask.Flask(__name__)
 CORS(app)
 announcer = MessageAnnouncer()
 armSwitch = ArmSwitch(
     18, 23, lambda v: announcer.announce(flask.json.dumps({'armed': v}), 'status'))
+motionDistanceMonitor = MotionDistanceMonitor(
+    24, 25, 12,
+    lambda d: announcer.announce(flask.json.dumps(
+        {'motion': True, 'distance': d}), 'motion'),
+    lambda d: announcer.announce(flask.json.dumps(
+        {'motion': False, 'distance': d}), 'motion'),
+    lambda: armSwitch.armed)
 
 
 @app.route('/status')
@@ -40,10 +49,13 @@ def ping() -> Any:
 @app.route('/listen')
 def listen() -> flask.Response:
     def stream() -> Generator[str, None, None]:
-        messages = announcer.listen()  # returns a queue.Queue
+        listener_id, messages = announcer.listen()  # returns a queue.Queue
         while True:
             message = messages.get()  # blocks until a new message arrives
+            logging.debug(
+                f'Sending message to listener #{listener_id}: {message}')
             yield message
+            time.sleep(0.05)  # throttle messages
     return flask.Response(stream(), mimetype='text/event-stream')
 
 

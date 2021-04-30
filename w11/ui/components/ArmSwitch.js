@@ -13,6 +13,15 @@ Vue.component('arm-switch', {
     }
   },
   methods: {
+    checkStatus() {
+      console.log('>> Fetching status');
+      axios
+        .get(`${Vue.Constants.SERVICE_URL}/status`)
+        .then(response => {
+          this.armed = response.data.armed;
+          console.log('<< Done');
+        });
+    },
     changeArmed(value) {
       axios
         .patch(`${Vue.Constants.SERVICE_URL}/status`, {
@@ -24,12 +33,6 @@ Vue.component('arm-switch', {
     }
   },
   mounted() {
-    console.log('>> Fetching status');
-    axios
-      .get(`${Vue.Constants.SERVICE_URL}/status`)
-      .then(response => {
-        this.armed = response.data.armed;
-        console.log('<< Done');
-      });
+    this.checkStatus();
   }
-})
+});

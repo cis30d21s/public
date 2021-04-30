@@ -6,3 +6,22 @@
 .arm-switch-container label {
     font-size: 1.5em;
 }
+
+.card-container {
+    width: 60vw;
+    margin: auto;
+}
+
+@media only screen and (max-width: 960px) {
+    .card-container {
+        width: 95vw;
+    }
+}
+
+.text-left {
+    text-align: left;
+}
+
+.tooltip {
+    color: white !important;
+}
