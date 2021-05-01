@@ -14,15 +14,19 @@
 
 <body>
     <div id="app">
-        <h1>Home Security Dashboard</h1>
-        <arm-switch ref="armSwitch"></arm-switch>
-        <motion-distance-card ref="motionDistanceCard"></motion-distance-card>
+        <md-content class="md-display-2 margin-vertical-1">Home Security Dashboard</md-content>
+        <div class="md-layout md-alignment-center-center">
+            <arm-switch ref="armSwitch"></arm-switch>
+            <tamper-alert-card ref="tamperAlertCard"></tamper-alert-card>
+            <motion-distance-card ref="motionDistanceCard"></motion-distance-card>
+        </div>
     </div>
 
     <script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.js"></script>
     <script src="https://unpkg.com/axios@0.21.1/dist/axios.min.js"></script>
     <script src="./components/ArmSwitch.js"></script>
+    <script src="./components/TamperAlertCard.js"></script>
     <script src="./components/MotionDistanceCard.js"></script>
     <script>
         const serviceUrl = 'http://rp2021b.local:5000';
@@ -37,6 +41,10 @@
                     console.log(`Got status message: ${message.data}`);
                     this.$refs.armSwitch.armed = JSON.parse(message.data).armed;
                 },
+                handleTamperMessage(message) {
+                    console.log(`Got tamper message: ${message.data}`);
+                    this.$refs.tamperAlertCard.tampered = JSON.parse(message.data).tampered;
+                },
                 handleMotionMessage(message) {
                     console.log(`Got motion message: ${message.data}`);
                     const data = JSON.parse(message.data);
@@ -48,6 +56,7 @@
                     console.log('SSE initializing');
                     sse = new EventSource(`${serviceUrl}/listen`);
                     sse.addEventListener("status", this.handleStatusMessage);
+                    sse.addEventListener("tamper", this.handleTamperMessage);
                     sse.addEventListener("motion", this.handleMotionMessage);
                     sse.addEventListener("open", () => {
                         console.log('SSE open');

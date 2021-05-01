@@ -4,18 +4,7 @@
 }
 
 .arm-switch-container label {
-    font-size: 1.5em;
-}
-
-.card-container {
-    width: 60vw;
-    margin: auto;
-}
-
-@media only screen and (max-width: 960px) {
-    .card-container {
-        width: 95vw;
-    }
+    font-size: 2em;
 }
 
 .text-left {
@@ -24,4 +13,14 @@
 
 .tooltip {
     color: white !important;
+}
+
+.margin-vertical-1 {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+}
+
+.card-container {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
 }

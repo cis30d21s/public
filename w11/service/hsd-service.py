@@ -6,6 +6,7 @@ from werkzeug.serving import WSGIRequestHandler
 from MessageAnnouncer import MessageAnnouncer
 from ArmSwitch import ArmSwitch
 from MotionDistance import MotionDistanceMonitor
+from TamperAlert import TamperAlert
 import logging
 import time
 
@@ -21,6 +22,9 @@ motionDistanceMonitor = MotionDistanceMonitor(
     lambda d: announcer.announce(flask.json.dumps(
         {'motion': False, 'distance': d}), 'motion'),
     lambda: armSwitch.armed)
+tamperAlert = TamperAlert()
+tamperAlert.when_moved = lambda: announcer.announce(flask.json.dumps(
+    {'tampered': True}), 'tamper') if armSwitch.armed else None
 
 
 @app.route('/status')
@@ -60,6 +64,7 @@ def listen() -> flask.Response:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s [%(threadName)s] %(message)s')
     WSGIRequestHandler.protocol_version = 'HTTP/1.1'
     app.run(host='0.0.0.0', debug=True)

@@ -1,10 +1,12 @@
 Vue.component('arm-switch', {
   template: /*html*/
     `
-    <div class='arm-switch-container'>
-      <md-switch id="arm-switch" v-model="armed" class="md-primary" @change="changeArmed">
-        {{ armed ? 'Armed' : 'Unarmed' }}
-      </md-switch>
+    <div class='arm-switch-container card-container md-layout-item md-size-60 md-xsmall-size-95'>
+      <md-card>
+        <md-switch id="arm-switch" v-model="armed" class="md-primary" @change="changeArmed">
+          {{ armed ? 'Armed' : 'Unarmed' }}
+        </md-switch>
+      </md-card>
     </div>
     `,
   data() {

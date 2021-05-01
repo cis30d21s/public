@@ -1,7 +1,9 @@
 from gpiozero import DistanceSensor, MotionSensor
 from typing import Callable
 import warnings
-warnings.simplefilter('ignore')  # ignore 'no echo received' warnings
+from gpiozero.exc import DistanceSensorNoEcho
+# ignore 'no echo received' warnings
+warnings.simplefilter('ignore', DistanceSensorNoEcho)
 
 
 class MotionDistanceMonitor:
