@@ -61,4 +61,5 @@ class TamperAlert:
     @staticmethod
     @atexit.register
     def _stop_threads():
-        TamperAlert._stop_event.set()
+        if hasattr(TamperAlert, '_stop_event'):
+            TamperAlert._stop_event.set()
