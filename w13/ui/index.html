@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS IoT LED</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/vue-material.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/theme/default.css">
+    <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+
+<body>
+    <div id="app">
+        <md-content class="md-display-2 margin-vertical-1">AWS IoT LED</md-content>
+        <div class="md-layout md-alignment-center-center">
+            <led ref="led"></led>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-material@1.0.0-beta-15/dist/vue-material.min.js"></script>
+    <script src="https://unpkg.com/aws4fetch@1.0.13/dist/aws4fetch.umd.js"></script>
+    <script src="./components/Led.js"></script>
+    <script>
+        const awsIotEndpoint = 'https://REPLACE-ME-ats.iot.us-west-2.amazonaws.com';
+        const thingName = 'cis30d21s-thing2';
+        const awsClient = new aws4fetch.AwsClient({
+            accessKeyId: 'REPLACE-ME',
+            secretAccessKey: 'REPLACE-ME'
+        });
+        Vue.use(VueMaterial.default);
+        Vue.Constants = {
+            AWS_CLIENT: awsClient,
+            SHADOW_URI: `${awsIotEndpoint}/things/${thingName}/shadow`
+        };
+        const app = new Vue({});
+        app.$mount('#app');
+    </script>
+</body>
+
+</html>

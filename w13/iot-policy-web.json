@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iot:GetThingShadow",
+                "iot:UpdateThingShadow"
+            ],
+            "Resource": [
+                "arn:aws:iot:us-west-2:%accountId%:thing/cis30d21s-*"
+            ]
+        }
+    ]
+}
