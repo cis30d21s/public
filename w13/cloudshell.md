@@ -48,3 +48,25 @@ aws iam create-user --path /iot/ --user-name cis30d21s-iot-web
 aws iam put-user-policy --user-name cis30d21s-iot-web --policy-name cis30d21s-iot-web --policy-document file://.iot-policy-web.json
 aws iam create-access-key --user-name cis30d21s-iot-web
 ```
+
+## IoT Rules
+
+```bash
+# create a role
+aws iam create-role --path /iot/ --role-name cis30d21s-iot-rules --assume-role-policy-document file://iot-rules-role.json
+accountId=$(aws sts get-caller-identity | jq -r .Account)
+sed "s/%accountId%/$accountId/g" iot-policy-rules.json > .iot-policy-rules.json
+aws iam put-role-policy --role-name cis30d21s-iot-rules --policy-name cis30d21s-iot-rules --policy-document file://.iot-policy-rules.json
+
+# create sns topic and set up sms
+snsTopic=$(aws sns create-topic --name cis30d21s-iot-led | jq -r '.TopicArn')
+aws sns subscribe --topic-arn $snsTopic --protocol sms --notification-endpoint '+18051112222'
+
+# create a rule
+sed "s/%accountId%/$accountId/g" iot-led-rule.json > .iot-led-rule.json
+aws iot create-topic-rule --rule-name cis30d21s_iot_led --topic-rule-payload file://.iot-led-rule.json
+
+# disable/enable rule
+aws iot disable-topic-rule --rule-name cis30d21s_iot_led
+aws iot enable-topic-rule --rule-name cis30d21s_iot_led
+```

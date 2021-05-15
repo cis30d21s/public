@@ -1,0 +1,13 @@
+{
+    "sql": "select 'LED is turned on' as message from '$aws/things/cis30d21s-thing2/shadow/update' where state.reported.led_on = True",
+    "ruleDisabled": false,
+    "awsIotSqlVersion": "2016-03-23",
+    "actions": [
+        {
+            "sns": {
+                "targetArn": "arn:aws:sns:us-west-2:%accountId%:cis30d21s-iot-led",
+                "roleArn": "arn:aws:iam::%accountId%:role/iot/cis30d21s-iot-rules"
+            }
+        }
+    ]
+}
